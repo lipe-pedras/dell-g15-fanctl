@@ -1,6 +1,6 @@
 use std::env;
-use std::fs::write;
-use std::process::{Command, exit};
+use std::fs;
+use std::process::{exit};
 
 const ACPI_PATH: &str = "/proc/acpi/call";
 
@@ -17,25 +17,40 @@ const GMODE_FLAG_OFF: &str = "\\_SB.AMW3.WMAX 0 0x25 {1, 0x00, 0x00, 0x00}";
 const GMODE_QUERY: &str = "\\_SB.AMW3.WMAX 0 0x14 {0x0b, 0x00, 0x00, 0x00}";
 
 fn acpi_call(payload: &str) {
-    write(ACPI_PATH, payload)
+    fs::write(ACPI_PATH, payload)
         .unwrap_or_else(|_| {
             eprintln!("Erro: não foi possível escrever em {}", ACPI_PATH);
             exit(1);
         });
 }
 
-fn set_governor(mode: &str) {
-    let status = Command::new("sh")
-        .arg("-c")
-        .arg(format!(
-            "echo {} > /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor",
-            mode
-        ))
-        .status()
-        .expect("Falha ao executar shell");
+fn set_governor(governor: &str) {
+    let base = "/sys/devices/system/cpu/cpufreq";
 
-    if !status.success() {
-        eprintln!("Erro ao definir governor");
+    let entries = fs::read_dir(base).unwrap_or_else(|_| {
+        eprintln!("cpufreq não disponível");
+        exit(1);
+    });
+
+    let mut applied = false;
+
+    for entry in entries.flatten() {
+        let path = entry.path();
+        if path.file_name().unwrap().to_string_lossy().starts_with("policy") {
+            let gov_path = path.join("scaling_governor");
+
+            if gov_path.exists() {
+                if let Err(e) = fs::write(&gov_path, governor) {
+                    eprintln!("Falha ao escrever {:?}: {}", gov_path, e);
+                } else {
+                    applied = true;
+                }
+            }
+        }
+    }
+
+    if !applied {
+        eprintln!("Nenhuma policy de CPU encontrada");
         exit(1);
     }
 }
