@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Dell G15 Fan Control
+Comment=System tray application for Dell G15 fan control
+Exec=fanctl tray
+Icon=fan-balanced
+Terminal=false
+Categories=System;Utility;
+StartupNotify=false
+X-KDE-autostart-after=panel
