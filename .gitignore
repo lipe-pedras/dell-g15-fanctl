@@ -1,0 +1,6 @@
+# Backend build files
+fanctl/target/
+fanctl/Cargo.lock
+
+# IDE files
+.vscode/
