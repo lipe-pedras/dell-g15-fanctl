@@ -2,13 +2,20 @@
 
 Fan controller for Dell G15 laptops on Linux (KDE/Ubuntu). Supports command-line interface and system tray integration.
 
+<img src="assets/screenshots/tray.png" alt="Fan control menu in the KDE system tray" width="210">
+
 ## Features
 
 ### Four Fan Modes
-- **🔵 Quiet** - Low noise fan profile, and CPU Governor on powersave
-- **🟢 Balanced** - Medium noise fan profile, and CPU Governor on powersave
-- **🟠 Performance** - Medium noise fan profile, and CPU Governor on performance
-- **🔴 G-Mode** - Fans at maximum speed and CPU Governor on performance
+
+| | Mode | Fans | CPU Governor |
+|---|------|------|--------------|
+| <img src="assets/icons/fan-quiet.svg" width="24" alt=""> | **Quiet** | Low noise profile | `powersave` |
+| <img src="assets/icons/fan-balanced.svg" width="24" alt=""> | **Balanced** | Medium noise profile | `powersave` |
+| <img src="assets/icons/fan-performance.svg" width="24" alt=""> | **Performance** | Medium noise profile | `performance` |
+| <img src="assets/icons/fan-gmode.svg" width="24" alt=""> | **G-Mode** | Maximum speed | `performance` |
+
+The tray icon changes to the matching icon above so the current mode is visible at a glance.
 
 ### Dual Interface
 - **CLI**: Quick control via terminal
@@ -89,8 +96,8 @@ polkit.addRule(function(action, subject) {
 });
 EOF
 
-# 6. Install icons (run script in icons/ folder)
-cd ../icons
+# 6. Install icons (from the repository root)
+cd ..
 ./install_icons.sh
 
 # 7. Auto-start (optional)
